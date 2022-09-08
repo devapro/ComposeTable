@@ -10,8 +10,8 @@ import pro.devapp.apps.composetable.table.TableRow
 import pro.devapp.apps.composetable.table.TableRowItem
 import kotlin.random.Random
 
-private val coins = listOf("Bitcoin", "Ethereum", "BNB", "Tether", "Solana")
-private val symbols = listOf("BTC", "ETH", "BNB", "USDT", "SOL")
+private val titles = listOf("A", "B", "C", "D", "E")
+private val subtitles = listOf("a", "b", "c", "d", "e")
 
 class MainViewModel: ViewModel() {
 
@@ -39,13 +39,13 @@ class MainViewModel: ViewModel() {
         val prefix = Random.nextInt(0, 100)
         return TableRow (
             id = System.currentTimeMillis(),
-            name = TableCoinNameItem(title = coins[index] + prefix.toString(), symbol = symbols[index] + prefix.toString()),
+            name = TableCoinNameItem(title = titles[index] + prefix.toString(), symbol = subtitles[index] + prefix.toString()),
             price = TableRowItem(value = Math.random().toString().substring(0, 4)),
-            chg_24h = TableRowItem(value = Math.random().toString().substring(0, 4)),
-            chg_7d = TableRowItem(value = Math.random().toString().substring(0, 4)),
-            marketCap = TableRowItem(value = Math.random().toString().substring(0, 4)),
-            vol_24 = TableRowItem(value = Math.random().toString().substring(0, 4)),
-            total_vol = TableRowItem(value = Math.random().toString().substring(0, 4))
+            price2 = TableRowItem(value = Math.random().toString().substring(0, 4)),
+            price3 = TableRowItem(value = Math.random().toString().substring(0, 4)),
+            price4 = TableRowItem(value = Math.random().toString().substring(0, 4)),
+            price5 = TableRowItem(value = Math.random().toString().substring(0, 4)),
+            price6 = TableRowItem(value = Math.random().toString().substring(0, 4))
         )
     }
 }

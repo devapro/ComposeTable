@@ -25,7 +25,11 @@ class MainActivity : ComponentActivity() {
             ComposeTableTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
-                    MultiScrollTable(viewModel.tableData, viewModel.isLoading){
+                    MultiScrollTable(
+                        viewModel.tableData,
+                        viewModel.isLoading,
+                        { _, _ -> },
+                    ){
                         viewModel.loadMoreData()
                     }
                 }
