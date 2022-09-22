@@ -1,6 +1,7 @@
 package pro.devapp.apps.composetable
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -11,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.ViewModelProvider
 import pro.devapp.apps.composetable.table.MultiScrollTable
+import pro.devapp.apps.composetable.table.MultiScrollTableOptimized
 import pro.devapp.apps.composetable.ui.theme.ComposeTableTheme
 
 class MainActivity : ComponentActivity() {
@@ -25,10 +27,12 @@ class MainActivity : ComponentActivity() {
             ComposeTableTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
-                    MultiScrollTable(
+                    MultiScrollTableOptimized(
                         viewModel.tableData,
                         viewModel.isLoading,
-                        { _, _ -> },
+                        { _, _ ->
+                            Log.d("SCROLL", "onScroll")
+                        },
                     ){
                         viewModel.loadMoreData()
                     }
