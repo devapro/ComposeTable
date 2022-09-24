@@ -1,4 +1,4 @@
-package pro.devapp.apps.composetable
+package pro.devapp.apps.composetable.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -13,7 +13,7 @@ import kotlin.random.Random
 private val titles = listOf("A", "B", "C", "D", "E")
 private val subtitles = listOf("a", "b", "c", "d", "e")
 
-class MainViewModel: ViewModel() {
+class MultiScrollTableViewModel: ViewModel() {
 
     val tableData = MutableLiveData<List<TableRow>>()
     val isLoading = MutableLiveData<Boolean>()

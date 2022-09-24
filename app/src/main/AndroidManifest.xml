@@ -20,6 +20,22 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".MultiScrollTableActivity"
+            android:exported="false">
+        </activity>
+        <activity
+            android:name=".MultiScrollTable2Activity"
+            android:exported="false">
+        </activity>
+        <activity
+            android:name=".MultiScrollComplexTableActivity"
+            android:exported="false">
+        </activity>
+        <activity
+            android:name=".MultiScrollComplexTableWithHeadersActivity"
+            android:exported="false">
+        </activity>
     </application>
 
 </manifest>
