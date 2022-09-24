@@ -17,11 +17,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.LiveData
 import pro.devapp.apps.composetable.component.*
+import pro.devapp.apps.composetable.data.TableRowData
+import pro.devapp.apps.composetable.data.tableHeader
 
 @ExperimentalFoundationApi
 @Composable
 fun MultiScrollTable(
-    list: LiveData<List<TableRow>>,
+    list: LiveData<List<TableRowData>>,
     isLoading: LiveData<Boolean>,
     onVerticalScroll: (Boolean, Boolean) -> Unit,
     onLoadMore: () -> Unit,

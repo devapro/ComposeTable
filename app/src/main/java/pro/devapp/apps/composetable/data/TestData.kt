@@ -1,4 +1,4 @@
-package pro.devapp.apps.composetable.table
+package pro.devapp.apps.composetable.data
 
 data class TableHeaderItem(
     val title: String,
@@ -14,17 +14,6 @@ data class TableCoinNameItem(
 data class TableRowItem (
     val value: String,
     val color: String? = null
-)
-
-data class TableRow(
-    val id: Long,
-    val name: TableCoinNameItem,
-    val price: TableRowItem,
-    val price2: TableRowItem,
-    val price3: TableRowItem,
-    val price4: TableRowItem,
-    val price5: TableRowItem,
-    val price6: TableRowItem
 )
 
 val tableHeader = listOf(

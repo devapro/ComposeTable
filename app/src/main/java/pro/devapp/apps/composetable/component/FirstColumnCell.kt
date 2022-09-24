@@ -8,10 +8,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import pro.devapp.apps.composetable.table.TableRow
+import pro.devapp.apps.composetable.data.TableRowData
 
 @Composable
-fun FirstColumnCell(firstColumnWidth: Dp, cellHeight: Dp, item: TableRow) {
+fun FirstColumnCell(firstColumnWidth: Dp, cellHeight: Dp, item: TableRowData) {
     Box(
         modifier = Modifier
             .width(firstColumnWidth)

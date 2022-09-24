@@ -68,7 +68,7 @@ class MainActivity : ComponentActivity() {
                             startActivity(
                                 Intent(
                                     this@MainActivity,
-                                    MultiScrollComplexTableActivity::class.java)
+                                    MultiScrollComplexTableWithHeadersActivity::class.java)
                             )
                         }) {
                             Text(text = "Complex table with headers")

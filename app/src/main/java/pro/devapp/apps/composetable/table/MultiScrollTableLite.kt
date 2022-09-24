@@ -24,11 +24,13 @@ import androidx.lifecycle.LiveData
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import pro.devapp.apps.composetable.component.*
+import pro.devapp.apps.composetable.data.TableRowData
+import pro.devapp.apps.composetable.data.tableHeader
 
 @ExperimentalFoundationApi
 @Composable
 fun MultiScrollTableLite(
-    list: LiveData<List<TableRow>>,
+    list: LiveData<List<TableRowData>>,
     isLoading: LiveData<Boolean>,
     onVerticalScroll: (Boolean, Boolean) -> Unit,
     onLoadMore: () -> Unit,

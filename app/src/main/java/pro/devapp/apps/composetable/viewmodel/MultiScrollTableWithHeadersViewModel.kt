@@ -5,17 +5,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import pro.devapp.apps.composetable.data.TableCoinNameItem
-import pro.devapp.apps.composetable.data.TableRowData
-import pro.devapp.apps.composetable.data.TableRowItem
+import pro.devapp.apps.composetable.data.*
 import kotlin.random.Random
 
 private val titles = listOf("A", "B", "C", "D", "E")
 private val subtitles = listOf("a", "b", "c", "d", "e")
 
-class MultiScrollTableViewModel: ViewModel() {
+class MultiScrollTableWithHeadersViewModel: ViewModel() {
 
-    val tableData = MutableLiveData<List<TableRowData>>()
+    val tableData = MutableLiveData<List<TableRow>>()
     val isLoading = MutableLiveData<Boolean>()
 
     fun loadMoreData() {
@@ -23,18 +21,28 @@ class MultiScrollTableViewModel: ViewModel() {
         viewModelScope.launch {
             val items = tableData.value?.toMutableList() ?: mutableListOf()
 
-            for (i in 1..20){
+            for (i in 1..10){
                 items.add(createItem())
                 delay(100)
             }
-            delay(1000)
+            items.add(
+                TableRowFull(
+                    id = 122111,
+                    title = "Title"
+                )
+            )
+            for (i in 1..10){
+                items.add(createItem())
+                delay(100)
+            }
+//            delay(1000)
             tableData.postValue(items)
             isLoading.postValue(false)
         }
     }
 
 
-    private fun createItem(): TableRowData {
+    private fun createItem(): TableRow {
         val index = Random.nextInt(0, 4)
         val prefix = Random.nextInt(0, 100)
         return TableRowData (

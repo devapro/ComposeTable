@@ -8,15 +8,22 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material.Divider
+import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInParent
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.LiveData
 import pro.devapp.apps.composetable.component.*
+import pro.devapp.apps.composetable.data.*
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -94,6 +101,13 @@ fun ComplexMultiScrollTableWithHeaders(
         )
     }
 
+    val headers = remember {
+        hashMapOf<Long, TableRowFull>()
+    }
+    val headersPosition = remember {
+        hashMapOf<Long, Float>()
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -106,6 +120,28 @@ fun ComplexMultiScrollTableWithHeaders(
         ) {
             LoadingIndicator(loading)
         }
+
+        headers.forEach {
+            val y = LocalDensity.current.run {
+                headersPosition[it.key]?.toDp()
+            }
+            Box(
+                modifier = Modifier
+                    .offset(x = 0.dp, y = y ?: 0.dp)
+                    .fillMaxWidth()
+                    .height(cellHeight)
+                    .background(color = Color.Blue)
+                    .zIndex(100f),
+                contentAlignment = Alignment.Center
+            ){
+                ItemRowFullWidth(
+                    cellHeight = cellHeight,
+                    item = it.value
+                )
+            }
+        }
+
+
         Row(
             modifier = Modifier
                 .fillMaxSize()
@@ -146,13 +182,23 @@ fun ComplexMultiScrollTableWithHeaders(
                                 item.id
                             }
                         ) { index, item ->
-                            Row {
-                                ItemRowCell(cellHeight, item.price)
-                                ItemRowCell(cellHeight, item.price2)
-                                ItemRowCell(cellHeight, item.price3)
-                                ItemRowCell(cellHeight, item.price4)
-                                ItemRowCell(cellHeight, item.price5)
-                                ItemRowCell(cellHeight, item.price6)
+                            if (item is TableRowData) {
+                                Row {
+                                    ItemRowCell(cellHeight, item.price)
+                                    ItemRowCell(cellHeight, item.price2)
+                                    ItemRowCell(cellHeight, item.price3)
+                                    ItemRowCell(cellHeight, item.price4)
+                                    ItemRowCell(cellHeight, item.price5)
+                                    ItemRowCell(cellHeight, item.price6)
+                                }
+                            }
+                            if (item is TableRowFull) {
+                                Box(
+                                    modifier = Modifier
+                                        .width(firstColumnWidth * 6)
+                                        .height(cellHeight)
+                                        .background(color = Color.White)
+                                )
                             }
                             if (index == size && size > 0) {
                                 onLoadMore()
@@ -185,11 +231,31 @@ fun ComplexMultiScrollTableWithHeaders(
                         item.id
                     }
                 ) { _, item ->
-                    FirstColumnCell(
-                        firstColumnWidth = firstColumnWidth,
-                        cellHeight = cellHeight,
-                        item = item
-                    )
+                    if (item is TableRowData) {
+                        FirstColumnCell(
+                            firstColumnWidth = firstColumnWidth,
+                            cellHeight = cellHeight,
+                            item = item
+                        )
+                    }
+                    if (item is TableRowFull) {
+                        Box(
+                            modifier = Modifier
+                                .width(firstColumnWidth)
+                                .height(cellHeight)
+                                .background(color = Color.White)
+                                .onGloballyPositioned {
+                                    headersPosition[item.id] = it.positionInParent().y
+                                }
+                        ) {
+
+                            LaunchedEffect(null) {
+                                if (headers[item.id] == null){
+                                    headers[item.id] = item
+                                }
+                            }
+                        }
+                    }
                 }
             }
 
@@ -225,13 +291,23 @@ fun ComplexMultiScrollTableWithHeaders(
                                 item.id
                             }
                         ) { index, item ->
-                            Row {
-                                ItemRowCell(cellHeight, item.price)
-                                ItemRowCell(cellHeight, item.price2)
-                                ItemRowCell(cellHeight, item.price3)
-                                ItemRowCell(cellHeight, item.price4)
-                                ItemRowCell(cellHeight, item.price5)
-                                ItemRowCell(cellHeight, item.price6)
+                            if (item is TableRowData) {
+                                Row {
+                                    ItemRowCell(cellHeight, item.price)
+                                    ItemRowCell(cellHeight, item.price2)
+                                    ItemRowCell(cellHeight, item.price3)
+                                    ItemRowCell(cellHeight, item.price4)
+                                    ItemRowCell(cellHeight, item.price5)
+                                    ItemRowCell(cellHeight, item.price6)
+                                }
+                            }
+                            if (item is TableRowFull) {
+                                Box(
+                                    modifier = Modifier
+                                        .width(firstColumnWidth * 6)
+                                        .height(cellHeight)
+                                        .background(color = Color.White)
+                                )
                             }
                             if (index == size && size > 0) {
                                 onLoadMore()
@@ -240,6 +316,24 @@ fun ComplexMultiScrollTableWithHeaders(
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun ItemRowFullWidth(cellHeight: Dp, item: TableRowFull) {
+    Column(
+        modifier = Modifier
+            .height(cellHeight)
+    ) {
+        Divider(color = Color.Gray, thickness = 1.dp)
+        Box(
+            modifier = Modifier
+                .height(cellHeight)
+                .width(100.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(text = item.title)
         }
     }
 }

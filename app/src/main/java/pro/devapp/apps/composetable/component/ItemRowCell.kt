@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import pro.devapp.apps.composetable.table.TableRowItem
+import pro.devapp.apps.composetable.data.TableRowItem
 
 @Composable
 fun ItemRowCell(cellHeight: Dp, item: TableRowItem) {

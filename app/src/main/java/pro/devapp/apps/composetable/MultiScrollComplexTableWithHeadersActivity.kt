@@ -10,14 +10,14 @@ import androidx.compose.material.Surface
 import androidx.lifecycle.ViewModelProvider
 import pro.devapp.apps.composetable.table.ComplexMultiScrollTableWithHeaders
 import pro.devapp.apps.composetable.ui.theme.ComposeTableTheme
-import pro.devapp.apps.composetable.viewmodel.MultiScrollTableViewModel
+import pro.devapp.apps.composetable.viewmodel.MultiScrollTableWithHeadersViewModel
 
 class MultiScrollComplexTableWithHeadersActivity : AppCompatActivity() {
     @OptIn(ExperimentalFoundationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val viewModel = ViewModelProvider(this).get(MultiScrollTableViewModel::class.java)
+        val viewModel = ViewModelProvider(this).get(MultiScrollTableWithHeadersViewModel::class.java)
 
         setContent {
             ComposeTableTheme {
@@ -30,7 +30,7 @@ class MultiScrollComplexTableWithHeadersActivity : AppCompatActivity() {
                             Log.d("SCROLL", "onScroll")
                         },
                     ) {
-                        viewModel.loadMoreData()
+                       // viewModel.loadMoreData()
                     }
                 }
             }
