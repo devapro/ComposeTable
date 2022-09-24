@@ -58,6 +58,13 @@ fun ComplexMultiScrollTableWithHeaders(
         derivedStateOf { lazyListStateRightTable.isScrollInProgress }
     }
 
+    val headers = remember {
+        hashMapOf<Long, TableRowFull>()
+    }
+    val headersPosition = remember {
+        hashMapOf<Long, Float>()
+    }
+
     LaunchedEffect(lazyListStateLeftTable.firstVisibleItemScrollOffset) {
         if (!lazyListStateStickyColumn.isScrollInProgress && !lazyListStateRightTable.isScrollInProgress) {
             lazyListStateStickyColumn.scrollToItem(
@@ -99,13 +106,24 @@ fun ComplexMultiScrollTableWithHeaders(
             lazyListStateStickyColumn.isScrollInProgress,
             lazyListStateStickyColumn.firstVisibleItemIndex <= 1
         )
-    }
 
-    val headers = remember {
-        hashMapOf<Long, TableRowFull>()
-    }
-    val headersPosition = remember {
-        hashMapOf<Long, Float>()
+        val firstIndex = lazyListStateStickyColumn.layoutInfo.visibleItemsInfo[0].index
+        val lastIndex =
+            lazyListStateStickyColumn.layoutInfo.visibleItemsInfo[lazyListStateStickyColumn.layoutInfo.visibleItemsInfo.size - 1].index
+        val visibleIds = mutableListOf<Long>()
+        for (index in firstIndex..lastIndex) {
+            val item = data.getOrNull(index)
+            if (item is TableRowFull) {
+                if (headers[item.id] == null) {
+                    headers[item.id] = item
+                }
+                visibleIds.add(item.id)
+            }
+        }
+        headers.keys.filter { !visibleIds.contains(it) }
+            .forEach {
+                headers.remove(it)
+            }
     }
 
     Box(
@@ -133,7 +151,7 @@ fun ComplexMultiScrollTableWithHeaders(
                     .background(color = Color.Blue)
                     .zIndex(100f),
                 contentAlignment = Alignment.Center
-            ){
+            ) {
                 ItemRowFullWidth(
                     cellHeight = cellHeight,
                     item = it.value
@@ -247,14 +265,7 @@ fun ComplexMultiScrollTableWithHeaders(
                                 .onGloballyPositioned {
                                     headersPosition[item.id] = it.positionInParent().y
                                 }
-                        ) {
-
-                            LaunchedEffect(null) {
-                                if (headers[item.id] == null){
-                                    headers[item.id] = item
-                                }
-                            }
-                        }
+                        )
                     }
                 }
             }

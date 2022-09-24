@@ -28,7 +28,17 @@ class MultiScrollTableWithHeadersViewModel: ViewModel() {
             items.add(
                 TableRowFull(
                     id = 122111,
-                    title = "Title"
+                    title = "Title 1"
+                )
+            )
+            for (i in 1..10){
+                items.add(createItem())
+                delay(100)
+            }
+            items.add(
+                TableRowFull(
+                    id = 34343,
+                    title = "Title 2"
                 )
             )
             for (i in 1..10){
