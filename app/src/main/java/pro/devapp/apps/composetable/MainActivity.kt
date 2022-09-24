@@ -11,6 +11,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.ViewModelProvider
+import pro.devapp.apps.composetable.table.ComplexMultiScrollTable
 import pro.devapp.apps.composetable.table.MultiScrollTable
 import pro.devapp.apps.composetable.table.MultiScrollTableOptimized
 import pro.devapp.apps.composetable.ui.theme.ComposeTableTheme
@@ -27,7 +28,7 @@ class MainActivity : ComponentActivity() {
             ComposeTableTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
-                    MultiScrollTableOptimized(
+                    ComplexMultiScrollTable(
                         viewModel.tableData,
                         viewModel.isLoading,
                         { _, _ ->
