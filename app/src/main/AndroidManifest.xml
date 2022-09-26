@@ -36,6 +36,10 @@
             android:name=".MultiScrollComplexTableWithHeadersActivity"
             android:exported="false">
         </activity>
+        <activity
+            android:name=".MultiScrollComplexTableWithHeaders2Activity"
+            android:exported="false">
+        </activity>
     </application>
 
 </manifest>

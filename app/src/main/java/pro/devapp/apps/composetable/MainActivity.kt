@@ -73,6 +73,16 @@ class MainActivity : ComponentActivity() {
                         }) {
                             Text(text = "Complex table with headers")
                         }
+                        Text(text = "Complex multi scroll table with sticky column in the center and headers with using pointerInput")
+                        Button(onClick = {
+                            startActivity(
+                                Intent(
+                                    this@MainActivity,
+                                    MultiScrollComplexTableWithHeaders2Activity::class.java)
+                            )
+                        }) {
+                            Text(text = "Complex table with headers 2")
+                        }
                     }
                 }
             }
