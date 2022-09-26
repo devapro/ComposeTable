@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 
 @Composable
 fun FirstColumnHeader(
@@ -25,6 +26,7 @@ fun FirstColumnHeader(
             .width(firstColumnWidth)
             .background(Color.LightGray)
             .padding(horizontal = 8.dp)
+            .zIndex(20f)
     ) {
         Text(
             modifier = Modifier

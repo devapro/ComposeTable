@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import pro.devapp.apps.composetable.data.TableHeaderItem
 
 
@@ -20,7 +21,8 @@ fun ItemRowHeader(cellHeight: Dp, item: TableHeaderItem) {
         modifier = Modifier
             .height(cellHeight)
             .width(100.dp)
-            .background(Color.Green),
+            .background(Color.Green)
+            .zIndex(20f),
         contentAlignment = Alignment.Center
     ) {
         Text(

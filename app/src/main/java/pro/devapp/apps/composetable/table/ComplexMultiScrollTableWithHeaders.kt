@@ -1,6 +1,5 @@
 package pro.devapp.apps.composetable.table
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
@@ -25,7 +24,6 @@ import androidx.lifecycle.LiveData
 import pro.devapp.apps.composetable.component.*
 import pro.devapp.apps.composetable.data.*
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ComplexMultiScrollTableWithHeaders(
     list: LiveData<List<TableRow>>,
@@ -58,11 +56,11 @@ fun ComplexMultiScrollTableWithHeaders(
         derivedStateOf { lazyListStateRightTable.isScrollInProgress }
     }
 
-    val headers = remember {
-        hashMapOf<Long, TableRowFull>()
+    var headers by remember {
+        mutableStateOf(mapOf<Int, TableRowFull>())
     }
-    val headersPosition = remember {
-        hashMapOf<Long, Float>()
+    var headersPosition by remember {
+        mutableStateOf(mapOf<Int, Float>())
     }
 
     LaunchedEffect(lazyListStateLeftTable.firstVisibleItemScrollOffset) {
@@ -107,23 +105,17 @@ fun ComplexMultiScrollTableWithHeaders(
             lazyListStateStickyColumn.firstVisibleItemIndex <= 1
         )
 
-        val firstIndex = lazyListStateStickyColumn.layoutInfo.visibleItemsInfo[0].index
-        val lastIndex =
-            lazyListStateStickyColumn.layoutInfo.visibleItemsInfo[lazyListStateStickyColumn.layoutInfo.visibleItemsInfo.size - 1].index
-        val visibleIds = mutableListOf<Long>()
-        for (index in firstIndex..lastIndex) {
-            val item = data.getOrNull(index)
-            if (item is TableRowFull) {
-                if (headers[item.id] == null) {
-                    headers[item.id] = item
+        if (lazyListStateStickyColumn.layoutInfo.visibleItemsInfo.isNotEmpty()) {
+            val firstIndex = lazyListStateStickyColumn.layoutInfo.visibleItemsInfo[0].index
+            val lastIndex =
+                lazyListStateStickyColumn.layoutInfo.visibleItemsInfo[lazyListStateStickyColumn.layoutInfo.visibleItemsInfo.size - 1].index
+            val mutableHeaders = headers.toMutableMap()
+            headers.keys.filter { it !in firstIndex..lastIndex }
+                .forEach {
+                    mutableHeaders.remove(it)
                 }
-                visibleIds.add(item.id)
-            }
+            headers = mutableHeaders
         }
-        headers.keys.filter { !visibleIds.contains(it) }
-            .forEach {
-                headers.remove(it)
-            }
     }
 
     Box(
@@ -139,163 +131,157 @@ fun ComplexMultiScrollTableWithHeaders(
             LoadingIndicator(loading)
         }
 
-        headers.forEach {
-            val y = LocalDensity.current.run {
-                headersPosition[it.key]?.toDp()
-            }
-            Box(
-                modifier = Modifier
-                    .offset(x = 0.dp, y = y ?: 0.dp)
-                    .fillMaxWidth()
-                    .height(cellHeight)
-                    .background(color = Color.Blue)
-                    .zIndex(100f),
-                contentAlignment = Alignment.Center
-            ) {
-                ItemRowFullWidth(
-                    cellHeight = cellHeight,
-                    item = it.value
-                )
-            }
-        }
-
-
-        Row(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
         ) {
+            // Headers
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(cellHeight)
+                    .zIndex(200f)
+            ) {
+
+                Box(
+                    modifier = Modifier
+                        .height(cellHeight)
+                        .weight(0.5f)
+                        .background(Color.Red)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .horizontalScroll(
+                                state = horizontalScrollStateLeft,
+                                reverseScrolling = true
+                            )
+                    ) {
+                        Row {
+                            tableHeader.forEach { item ->
+                                ItemRowHeader(cellHeight, item)
+                            }
+                        }
+                    }
+                }
+
+                FirstColumnHeader(
+                    firstColumnWidth = firstColumnWidth,
+                    height = cellHeight,
+                    text = "Title"
+                )
+
+                Box(
+                    modifier = Modifier
+                        .height(cellHeight)
+                        .weight(0.5f)
+                        .background(Color.Red)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .horizontalScroll(
+                                state = horizontalScrollStateRight
+                            )
+                    ) {
+                        Row {
+                            tableHeader.forEach { item ->
+                                ItemRowHeader(cellHeight, item)
+                            }
+                        }
+                    }
+                }
+
+            }
 
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .weight(0.5f)
-                    .background(Color.Red)
             ) {
-                Box(
+                // Tables
+                Row(
                     modifier = Modifier
                         .fillMaxSize()
-                        .horizontalScroll(
-                            state = horizontalScrollStateLeft,
-                            reverseScrolling = true
-                        )
                 ) {
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .disabledVerticalPointerInputScroll(isMainColumnScrollDisabled)
-                            .disabledHorizontalPointerInputScroll(),
-                        contentPadding = PaddingValues(bottom = 8.dp),
-                        state = lazyListStateLeftTable
-                    ) {
-                        stickyHeader {
-                            Row {
-                                tableHeader.forEach { item ->
-                                    ItemRowHeader(cellHeight, item)
-                                }
-                            }
-                        }
-                        itemsIndexed(
-                            items = data,
-                            key = { _, item ->
-                                item.id
-                            }
-                        ) { index, item ->
-                            if (item is TableRowData) {
-                                Row {
-                                    ItemRowCell(cellHeight, item.price)
-                                    ItemRowCell(cellHeight, item.price2)
-                                    ItemRowCell(cellHeight, item.price3)
-                                    ItemRowCell(cellHeight, item.price4)
-                                    ItemRowCell(cellHeight, item.price5)
-                                    ItemRowCell(cellHeight, item.price6)
-                                }
-                            }
-                            if (item is TableRowFull) {
-                                Box(
-                                    modifier = Modifier
-                                        .width(firstColumnWidth * 6)
-                                        .height(cellHeight)
-                                        .background(color = Color.White)
-                                )
-                            }
-                            if (index == size && size > 0) {
-                                onLoadMore()
-                            }
-                        }
-                    }
-                }
-            }
 
-            LazyColumn(
-                modifier = Modifier
-                    .width(firstColumnWidth)
-                    .fillMaxHeight()
-                    .background(Color.LightGray)
-                    .disabledVerticalPointerInputScroll(isFirstColumnScrollDisabled)
-                    .disabledHorizontalPointerInputScroll(),
-                contentPadding = PaddingValues(bottom = 8.dp),
-                state = lazyListStateStickyColumn
-            ) {
-                stickyHeader {
-                    FirstColumnHeader(
-                        firstColumnWidth = firstColumnWidth,
-                        height = cellHeight,
-                        text = "Title"
-                    )
-                }
-                itemsIndexed(
-                    items = data,
-                    key = { _, item ->
-                        item.id
-                    }
-                ) { _, item ->
-                    if (item is TableRowData) {
-                        FirstColumnCell(
-                            firstColumnWidth = firstColumnWidth,
-                            cellHeight = cellHeight,
-                            item = item
-                        )
-                    }
-                    if (item is TableRowFull) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .weight(0.5f)
+                            .background(Color.Red)
+                    ) {
                         Box(
                             modifier = Modifier
-                                .width(firstColumnWidth)
-                                .height(cellHeight)
-                                .background(color = Color.White)
-                                .onGloballyPositioned {
-                                    headersPosition[item.id] = it.positionInParent().y
-                                }
-                        )
-                    }
-                }
-            }
-
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .weight(0.5f)
-                    .background(Color.Green)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .horizontalScroll(state = horizontalScrollStateRight)
-                ) {
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .disabledVerticalPointerInputScroll(isMainColumnScrollDisabled)
-                            .disabledHorizontalPointerInputScroll(),
-                        contentPadding = PaddingValues(bottom = 8.dp),
-                        state = lazyListStateRightTable
-                    ) {
-                        stickyHeader {
-                            Row {
-                                tableHeader.forEach { item ->
-                                    ItemRowHeader(cellHeight, item)
+                                .fillMaxSize()
+                                .horizontalScroll(
+                                    state = horizontalScrollStateLeft,
+                                    reverseScrolling = true
+                                )
+                        ) {
+                            LazyColumn(
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .disabledVerticalPointerInputScroll(isMainColumnScrollDisabled)
+                                    .disabledHorizontalPointerInputScroll(),
+                                contentPadding = PaddingValues(bottom = 8.dp),
+                                state = lazyListStateLeftTable
+                            ) {
+//                            stickyHeader {
+//                                Row {
+//                                    tableHeader.forEach { item ->
+//                                        ItemRowHeader(cellHeight, item)
+//                                    }
+//                                }
+//                            }
+                                itemsIndexed(
+                                    items = data,
+                                    key = { _, item ->
+                                        item.id
+                                    }
+                                ) { index, item ->
+                                    if (item is TableRowData) {
+                                        Row {
+                                            ItemRowCell(cellHeight, item.price)
+                                            ItemRowCell(cellHeight, item.price2)
+                                            ItemRowCell(cellHeight, item.price3)
+                                            ItemRowCell(cellHeight, item.price4)
+                                            ItemRowCell(cellHeight, item.price5)
+                                            ItemRowCell(cellHeight, item.price6)
+                                        }
+                                    }
+                                    if (item is TableRowFull) {
+                                        Box(
+                                            modifier = Modifier
+                                                .width(firstColumnWidth * 6)
+                                                .height(cellHeight)
+                                                .background(color = Color.White)
+                                        )
+                                    }
+                                    if (index == size && size > 0) {
+                                        onLoadMore()
+                                    }
                                 }
                             }
                         }
+                    }
+
+                    LazyColumn(
+                        modifier = Modifier
+                            .width(firstColumnWidth)
+                            .fillMaxHeight()
+                            .background(Color.LightGray)
+                            .disabledVerticalPointerInputScroll(isFirstColumnScrollDisabled)
+                            .disabledHorizontalPointerInputScroll(),
+                        contentPadding = PaddingValues(bottom = 8.dp),
+                        state = lazyListStateStickyColumn
+                    ) {
+//                stickyHeader {
+//                    FirstColumnHeader(
+//                        firstColumnWidth = firstColumnWidth,
+//                        height = cellHeight,
+//                        text = "Title"
+//                    )
+//                }
                         itemsIndexed(
                             items = data,
                             key = { _, item ->
@@ -303,29 +289,112 @@ fun ComplexMultiScrollTableWithHeaders(
                             }
                         ) { index, item ->
                             if (item is TableRowData) {
-                                Row {
-                                    ItemRowCell(cellHeight, item.price)
-                                    ItemRowCell(cellHeight, item.price2)
-                                    ItemRowCell(cellHeight, item.price3)
-                                    ItemRowCell(cellHeight, item.price4)
-                                    ItemRowCell(cellHeight, item.price5)
-                                    ItemRowCell(cellHeight, item.price6)
-                                }
+                                FirstColumnCell(
+                                    firstColumnWidth = firstColumnWidth,
+                                    cellHeight = cellHeight,
+                                    item = item
+                                )
                             }
                             if (item is TableRowFull) {
                                 Box(
                                     modifier = Modifier
-                                        .width(firstColumnWidth * 6)
+                                        .width(firstColumnWidth)
                                         .height(cellHeight)
                                         .background(color = Color.White)
-                                )
+                                        .onGloballyPositioned {
+                                            headersPosition = headersPosition
+                                                .toMutableMap()
+                                                .apply { put(index, it.positionInParent().y) }
+                                        }
+                                ) {
+                                    if (headers[index] == null){
+                                        headers = headers.toMutableMap().apply { put(index, item) }
+                                    }
+                                }
                             }
-                            if (index == size && size > 0) {
-                                onLoadMore()
+                        }
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .weight(0.5f)
+                            .background(Color.Green)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .horizontalScroll(state = horizontalScrollStateRight)
+                        ) {
+                            LazyColumn(
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .disabledVerticalPointerInputScroll(isMainColumnScrollDisabled)
+                                    .disabledHorizontalPointerInputScroll(),
+                                contentPadding = PaddingValues(bottom = 8.dp),
+                                state = lazyListStateRightTable
+                            ) {
+//                            stickyHeader {
+//                                Row {
+//                                    tableHeader.forEach { item ->
+//                                        ItemRowHeader(cellHeight, item)
+//                                    }
+//                                }
+//                            }
+                                itemsIndexed(
+                                    items = data,
+                                    key = { _, item ->
+                                        item.id
+                                    }
+                                ) { index, item ->
+                                    if (item is TableRowData) {
+                                        Row {
+                                            ItemRowCell(cellHeight, item.price)
+                                            ItemRowCell(cellHeight, item.price2)
+                                            ItemRowCell(cellHeight, item.price3)
+                                            ItemRowCell(cellHeight, item.price4)
+                                            ItemRowCell(cellHeight, item.price5)
+                                            ItemRowCell(cellHeight, item.price6)
+                                        }
+                                    }
+                                    if (item is TableRowFull) {
+                                        Box(
+                                            modifier = Modifier
+                                                .width(firstColumnWidth * 6)
+                                                .height(cellHeight)
+                                                .background(color = Color.White)
+                                        )
+                                    }
+                                    if (index == size && size > 0) {
+                                        onLoadMore()
+                                    }
+                                }
                             }
                         }
                     }
                 }
+
+                headers
+                    .forEach {
+                        val yPx = headersPosition[it.key] ?: 0f
+                        val y = LocalDensity.current.run {
+                            yPx.toDp()
+                        }
+                        Box(
+                            modifier = Modifier
+                                .offset(x = 0.dp, y = y)
+                                .fillMaxWidth()
+                                .height(cellHeight)
+                                .background(color = Color.Blue)
+                                .zIndex(10f),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            ItemRowFullWidth(
+                                cellHeight = cellHeight,
+                                item = it.value
+                            )
+                        }
+                    }
             }
         }
     }

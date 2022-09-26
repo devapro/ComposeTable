@@ -41,7 +41,7 @@ class MultiScrollTableWithHeadersViewModel: ViewModel() {
                     title = "Title 2"
                 )
             )
-            for (i in 1..10){
+            for (i in 1..30){
                 items.add(createItem())
                 delay(100)
             }
